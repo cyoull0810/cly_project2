@@ -1,0 +1,16 @@
+.projectsOnly: &projectsOnly
+  projects:
+    only:
+      - us-gov/demos/sameerkamani/spring/my-tanukitech-spring
+
+monthlySecCreated:
+  title: "Monthly security issues created"
+  type: bar
+  <<: *projectsOnly
+  query:
+    issuable_type: issue
+    issuable_state: opened
+    filter_labels:
+      - Security
+    group_by: week
+    period_limit: 90

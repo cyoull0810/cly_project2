@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/tanuki.css">
+    <title>Greetings Page - Tanuki Tech</title>
+</head>
+<body class="text-center">
+
+    <form class="form-signin" action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
+ 
+
+    <h1 class="h3 mb-3 font-weight-normal">Tanuki Form</h1>
+    <p>Caution this form may contain some vulnerable actions</p>
+            <label for="inputId" class="sr-only">Id</label>
+             <input type="text" class="form-control" th:field="*{id}" />
+             <label for="inputId" class="sr-only">Message></label>
+              <input type="text" class="form-control" th:field="*{content}" />
+            <input class="btn btn-lg btn-purple btn-block" type="submit" value="Submit" /> <input class="btn btn-lg btn-purple btn-block" type="reset" value="Reset" />
+        </form>
+
+</body>
+</html>

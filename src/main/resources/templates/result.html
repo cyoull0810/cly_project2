@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/tanuki.css">
+    <title>Greetings Result - Tanuki Tech!</title>
+</head>
+<body class="text-center">
+    <form class="form-signin" action="#">
+    <h1 class="h3 mb-3 font-weight-normal">Result</h1>
+            <p th:text="'id: ' + ${greeting.id}" />
+            <p th:text="'content: ' + ${greeting.content}" />
+            <a href="/greeting">Submit another message</a>
+        </form>
+</body>
+</html>

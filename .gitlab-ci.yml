@@ -1,0 +1,287 @@
+image: alpine:latest
+
+variables:
+  # KUBE_INGRESS_BASE_DOMAIN is the application deployment domain and should be set as a variable at the group or project level.
+  # KUBE_INGRESS_BASE_DOMAIN: domain.example.com
+#********Tests switches - turning things off *******
+  CODE_QUALITY_DISABLED: "true"
+  CONTAINER_SCANNING_DISABLED: "true"
+  #DAST_DISABLED: "true"
+  DEPENDENCY_SCANNING_DISABLED: "true"
+  LICENSE_MANAGEMENT_DISABLED: "true"
+  PERFORMANCE_DISABLED: "true"
+  #REVIEW_DISABLED: "true"
+  TEST_DISABLED: "true"
+  SAST_DISABLED: "true"
+  
+  #*********Pipipline switches turning things on *********
+  INCREMENTAL_ROLLOUT_ENABLED: "true"
+  STAGING_ENABLED: "true"
+ 
+  #*********Project specifics *********
+  #DAST_WEBSITE: #Set to url of 1st build of staging. - The staging URL is built by the https://[Groupname]-[subgroupname]-[sitename]--staging.us-inst.gitlabdemo.io
+  URL: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues?title=Pipeline%20$CI_PIPELINE_ID%20Manual%20Tests&description=**MANUAL%20VERIFICATION%20IS%20REQUIRED**%20%0A%20Check%20Login%20Functionality%3A%0A-%20%5B%20%5D%20Test%20Case%201%3A%20Check%20results%20on%20entering%20valid%20User%20Id%20%26%20Password%0A-%20%5B%20%5D%20Test%20Case%202%3A%20Check%20results%20on%20entering%20Invalid%20User%20ID%20%26%20Password%0A-%20%5B%20%5D%20Test%20Case%203%3A%20Check%20response%20when%20a%20User%20ID%20is%20Empty%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%204%3A%20Check%20response%20when%20a%20User%20ID%20is%20not%20filled%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%205%3A%20Check%20response%20when%20a%20User%20ID%20is%20filled%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%206%3A%20Check%20response%20when%20a%20User%20ID%20is%20filled-%20password%20is%20filled%20and%20browser%20is%20refreshed&labels=Manual_Testing'
+  URL2: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/variables/issue_id'
+  URL3: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id?state_event=close'
+ 
+  #*********other specifics *********
+  POSTGRES_USER: user
+  POSTGRES_PASSWORD: testing-password
+  POSTGRES_ENABLED: "true"
+  POSTGRES_DB: $CI_ENVIRONMENT_SLUG
+  POSTGRES_VERSION: 9.6.2
+  DOCKER_DRIVER: overlay2
+  ROLLOUT_RESOURCE_TYPE: deployment
+  DOCKER_TLS_CERTDIR: ""  # https://gitlab.com/gitlab-org/gitlab-runner/issues/4501
+
+stages:
+  - build
+  - test
+  - deploy  # dummy stage to follow the template guidelines
+  - review
+  - staging
+  - dast
+  - canary
+  - production
+  - incremental rollout 10%
+  - incremental rollout 25%
+  - incremental rollout 50%
+  - incremental rollout 100%
+  - performance
+  - cleanup
+
+workflow:
+  rules:
+    - if: '$BUILDPACK_URL || $AUTO_DEVOPS_EXPLICITLY_ENABLED == "1"'
+
+    - exists:
+        - Dockerfile
+
+    # https://github.com/heroku/heroku-buildpack-clojure
+    - exists:
+        - project.clj
+
+    # https://github.com/heroku/heroku-buildpack-go
+    - exists:
+        - go.mod
+        - Gopkg.mod
+        - Godeps/Godeps.json
+        - vendor/vendor.json
+        - glide.yaml
+        - src/**/*.go
+
+    # https://github.com/heroku/heroku-buildpack-gradle
+    - exists:
+        - gradlew
+        - build.gradle
+        - settings.gradle
+
+    # https://github.com/heroku/heroku-buildpack-java
+    - exists:
+        - pom.xml
+        - pom.atom
+        - pom.clj
+        - pom.groovy
+        - pom.rb
+        - pom.scala
+        - pom.yaml
+        - pom.yml
+
+    # https://github.com/heroku/heroku-buildpack-multi
+    - exists:
+        - .buildpacks
+
+    # https://github.com/heroku/heroku-buildpack-nodejs
+    - exists:
+        - package.json
+
+    # https://github.com/heroku/heroku-buildpack-php
+    - exists:
+        - composer.json
+        - index.php
+
+    # https://github.com/heroku/heroku-buildpack-play
+    # TODO: detect script excludes some scala files
+    - exists:
+        - '**/conf/application.conf'
+
+    # https://github.com/heroku/heroku-buildpack-python
+    # TODO: detect script checks that all of these exist, not any
+    - exists:
+        - requirements.txt
+        - setup.py
+        - Pipfile
+
+    # https://github.com/heroku/heroku-buildpack-ruby
+    - exists:
+        - Gemfile
+
+    # https://github.com/heroku/heroku-buildpack-scala
+    - exists:
+        - '*.sbt'
+        - project/*.scala
+        - .sbt/*.scala
+        - project/build.properties
+
+    # https://github.com/dokku/buildpack-nginx
+    - exists:
+        - .static
+
+build:
+  stage: build
+  image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image:v0.2.0"
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - docker:19.03.5-dind
+  script:
+    - |
+      if [[ -z "$CI_COMMIT_TAG" ]]; then
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
+      else
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
+      fi
+    - /build/build.sh
+  #only:
+   # - branches
+   # - tags
+
+build manual tests:
+  stage: build
+  image: curlimages/curl
+  script:
+    - echo $CI_PIPELINE_ID
+    - echo $CI_PROJECT_ID
+    - echo $URL
+    #    - echo $private_token
+    - |
+      issue=$(curl --location --request POST "$URL" --header "PRIVATE-TOKEN: "$private_token"")
+      iid=$(echo $issue | sed -nE 's/.*"iid":(.*),"project_id.*/\1/p')
+    - echo $iid
+    - |
+      curl --request PUT --header "PRIVATE-TOKEN: "$private_token"" "$URL2" --form "key=issue_id" --form "value="$iid""
+
+.Verify man test complete:
+  stage: Dast
+  script:
+    - exit 0
+  when: manual
+  allow_failure: true
+    
+manual tests validation:
+  stage: dast
+  image: curlimages/curl
+  variables:
+    URL: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id'
+    URL2: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id?state_event=close'
+  script:
+    - echo "Running this stage confirms that manual tests have been executed"
+    - echo $issue_id
+    - echo $iid
+    - echo $id
+    - echo $URL
+    - echo $URL2
+    - |
+      issue=$(curl --location --request GET "$URL" --header "PRIVATE-TOKEN: "$private_token"")
+      task_count=$(echo $issue | sed -nE 's/.*"count":(.*),"completed.*/\1/p')
+      task_complete_count=$(echo $issue | sed -nE 's/.*"completed_count":(.*)},"weight.*/\1/p')
+    - echo $issue_id
+    - echo $iid
+    - echo $id
+    - echo $URL
+    - echo $URL2
+    - echo $task_count
+    - echo $task_complete_count
+    - |
+        if [ $task_count == $task_complete_count ]; then
+          curl --request PUT --header "PRIVATE-TOKEN: $private_token" "$URL2"
+          echo "Manual test task was marked complete"
+          exit 0
+        else
+          echo "Manual test task has not been marked complete"
+          exit 1
+        fi
+  when: manual
+  allow_failure: true
+#test:
+#  services:
+#    - "postgres:${POSTGRES_VERSION}"
+#  variables:
+#   POSTGRES_DB: test
+#  stage: test
+#  image: gliderlabs/herokuish:latest
+#  script:
+#    - |
+#      if [ -z ${KUBERNETES_PORT+x} ]; then
+#        DB_HOST=postgres
+#      else
+#        DB_HOST=localhost
+#      fi
+#    - export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/${POSTGRES_DB}"
+#    - cp -R . /tmp/app
+#    - /bin/herokuish buildpack test
+#  only:
+#    - branches
+#    - tags
+#  except:
+#    variables:
+#      - $TEST_DISABLED
+
+SAST:
+  stage: test 
+  script:
+    - exit 0
+
+DEPENDENCY:
+  stage: test
+  script:
+    - exit 0
+
+LICENCE:
+  stage: test
+  script:
+    - exit 0
+    
+#coveralls-integration-test:
+  #stage: test
+ # script:
+  #  - exit 0
+
+CODE QUALITY:
+  stage: test
+  script:
+    - exit 0
+
+#cucumber-mysql-acceptance-test:
+#  stage: test
+#  script:
+#    - exit 0
+
+My unit tests:
+  stage: test
+  script:
+    - exit 0
+
+Rubocop static:
+  stage: test
+  script:
+    - exit 0
+    
+
+
+
+
+include:
+  #- template: Jobs/Build.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
+  #- template: Jobs/Test.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Test.gitlab-ci.yml
+  - template: Jobs/Code-Quality.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Code-Quality.gitlab-ci.yml
+  - template: Jobs/Deploy.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Deploy.gitlab-ci.yml
+  #- template: Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml
+  - template: Jobs/Browser-Performance-Testing.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Browser-Performance-Testing.gitlab-ci.yml
+  - template: Security/DAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/DAST.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Management.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/License-Management.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml

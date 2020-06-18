@@ -1,37 +1,77 @@
+# Auto DevOps
+# This CI/CD configuration provides a standard pipeline for
+# * building a Docker image (using a buildpack if necessary),
+# * storing the image in the container registry,
+# * running tests from a buildpack,
+# * running code quality analysis,
+# * creating a review app for each topic branch,
+# * and continuous deployment to production
+#
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * code_quality: CODE_QUALITY_DISABLED
+# * license_management: LICENSE_MANAGEMENT_DISABLED
+# * performance: PERFORMANCE_DISABLED
+# * sast: SAST_DISABLED
+# * dependency_scanning: DEPENDENCY_SCANNING_DISABLED
+# * container_scanning: CONTAINER_SCANNING_DISABLED
+# * dast: DAST_DISABLED
+# * review: REVIEW_DISABLED
+# * stop_review: REVIEW_DISABLED
+#
+# In order to deploy, you must have a Kubernetes cluster configured either
+# via a project integration, or via group/project variables.
+# KUBE_INGRESS_BASE_DOMAIN must also be set on the cluster settings,
+# as a variable at the group or project level, or manually added below.
+#
+# Continuous deployment to production is enabled by default.
+# If you want to deploy to staging first, set STAGING_ENABLED environment variable.
+# If you want to enable incremental rollout, either manual or time based,
+# set INCREMENTAL_ROLLOUT_MODE environment variable to "manual" or "timed".
+# If you want to use canary deployments, set CANARY_ENABLED environment variable.
+#
+# If Auto DevOps fails to detect the proper buildpack, or if you want to
+# specify a custom buildpack, set a project variable `BUILDPACK_URL` to the
+# repository URL of the buildpack.
+# e.g. BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-ruby.git#v142
+# If you need multiple buildpacks, add a file to your project called
+# `.buildpacks` that contains the URLs, one on each line, in order.
+# Note: Auto CI does not work with multiple buildpacks yet
+
 image: alpine:latest
 
 variables:
   # KUBE_INGRESS_BASE_DOMAIN is the application deployment domain and should be set as a variable at the group or project level.
   # KUBE_INGRESS_BASE_DOMAIN: domain.example.com
-#********Tests switches - turning things off *******
-  CODE_QUALITY_DISABLED: "true"
-  CONTAINER_SCANNING_DISABLED: "true"
+ 
+  #********Tests switches - turning things off *******
+  #CODE_QUALITY_DISABLED: "true"
+  #CONTAINER_SCANNING_DISABLED: "true"
   #DAST_DISABLED: "true"
-  DEPENDENCY_SCANNING_DISABLED: "true"
-  LICENSE_MANAGEMENT_DISABLED: "true"
-  PERFORMANCE_DISABLED: "true"
+  #DEPENDENCY_SCANNING_DISABLED: "true"
+  #LICENSE_MANAGEMENT_DISABLED: "true"
+  #PERFORMANCE_DISABLED: "true"
   #REVIEW_DISABLED: "true"
   TEST_DISABLED: "true"
-  SAST_DISABLED: "true"
+  #SAST_DISABLED: "true"
   
   #*********Pipipline switches turning things on *********
   INCREMENTAL_ROLLOUT_ENABLED: "true"
   STAGING_ENABLED: "true"
- 
   #*********Project specifics *********
   #DAST_WEBSITE: #Set to url of 1st build of staging. - The staging URL is built by the https://[Groupname]-[subgroupname]-[sitename]--staging.us-inst.gitlabdemo.io
-  URL: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues?title=Pipeline%20$CI_PIPELINE_ID%20Manual%20Tests&description=**MANUAL%20VERIFICATION%20IS%20REQUIRED**%20%0A%20Check%20Login%20Functionality%3A%0A-%20%5B%20%5D%20Test%20Case%201%3A%20Check%20results%20on%20entering%20valid%20User%20Id%20%26%20Password%0A-%20%5B%20%5D%20Test%20Case%202%3A%20Check%20results%20on%20entering%20Invalid%20User%20ID%20%26%20Password%0A-%20%5B%20%5D%20Test%20Case%203%3A%20Check%20response%20when%20a%20User%20ID%20is%20Empty%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%204%3A%20Check%20response%20when%20a%20User%20ID%20is%20not%20filled%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%205%3A%20Check%20response%20when%20a%20User%20ID%20is%20filled%20%26%20Login%20Button%20is%20pressed%0A-%20%5B%20%5D%20Test%20Case%206%3A%20Check%20response%20when%20a%20User%20ID%20is%20filled-%20password%20is%20filled%20and%20browser%20is%20refreshed&labels=Manual_Testing'
-  URL2: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/variables/issue_id'
-  URL3: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id?state_event=close'
- 
-  #*********other specifics *********
+
+
   POSTGRES_USER: user
   POSTGRES_PASSWORD: testing-password
   POSTGRES_ENABLED: "true"
   POSTGRES_DB: $CI_ENVIRONMENT_SLUG
   POSTGRES_VERSION: 9.6.2
+
   DOCKER_DRIVER: overlay2
+
   ROLLOUT_RESOURCE_TYPE: deployment
+
   DOCKER_TLS_CERTDIR: ""  # https://gitlab.com/gitlab-org/gitlab-runner/issues/4501
 
 stages:
@@ -144,67 +184,9 @@ build:
         export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
       fi
     - /build/build.sh
-  #only:
-   # - branches
-   # - tags
 
-build manual tests:
-  stage: build
-  image: curlimages/curl
-  script:
-    - echo $CI_PIPELINE_ID
-    - echo $CI_PROJECT_ID
-    - echo $URL
-    #    - echo $private_token
-    - |
-      issue=$(curl --location --request POST "$URL" --header "PRIVATE-TOKEN: "$private_token"")
-      iid=$(echo $issue | sed -nE 's/.*"iid":(.*),"project_id.*/\1/p')
-    - echo $iid
-    - |
-      curl --request PUT --header "PRIVATE-TOKEN: "$private_token"" "$URL2" --form "key=issue_id" --form "value="$iid""
 
-.Verify man test complete:
-  stage: Dast
-  script:
-    - exit 0
-  when: manual
-  allow_failure: true
-    
-manual tests validation:
-  stage: dast
-  image: curlimages/curl
-  variables:
-    URL: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id'
-    URL2: 'https://gitlab-core.us.gitlabdemo.cloud/api/v4/projects/$CI_PROJECT_ID/issues/$issue_id?state_event=close'
-  script:
-    - echo "Running this stage confirms that manual tests have been executed"
-    - echo $issue_id
-    - echo $iid
-    - echo $id
-    - echo $URL
-    - echo $URL2
-    - |
-      issue=$(curl --location --request GET "$URL" --header "PRIVATE-TOKEN: "$private_token"")
-      task_count=$(echo $issue | sed -nE 's/.*"count":(.*),"completed.*/\1/p')
-      task_complete_count=$(echo $issue | sed -nE 's/.*"completed_count":(.*)},"weight.*/\1/p')
-    - echo $issue_id
-    - echo $iid
-    - echo $id
-    - echo $URL
-    - echo $URL2
-    - echo $task_count
-    - echo $task_complete_count
-    - |
-        if [ $task_count == $task_complete_count ]; then
-          curl --request PUT --header "PRIVATE-TOKEN: $private_token" "$URL2"
-          echo "Manual test task was marked complete"
-          exit 0
-        else
-          echo "Manual test task has not been marked complete"
-          exit 1
-        fi
-  when: manual
-  allow_failure: true
+
 #test:
 #  services:
 #    - "postgres:${POSTGRES_VERSION}"
@@ -222,37 +204,38 @@ manual tests validation:
 #    - export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/${POSTGRES_DB}"
 #    - cp -R . /tmp/app
 #    - /bin/herokuish buildpack test
-#  only:
-#    - branches
-#    - tags
+
 #  except:
 #    variables:
 #      - $TEST_DISABLED
 
-SAST:
-  stage: test 
-  script:
-    - exit 0
+#SAST:
+#  stage: test 
+#  script:
+#    - exit 0
 
-DEPENDENCY:
-  stage: test
-  script:
-    - exit 0
 
-LICENCE:
-  stage: test
-  script:
-    - exit 0
+#DEPENDENCY:
+#  stage: test
+#  script:
+#    - exit 0
+
+
+#LICENCE:
+#  stage: test
+#  script:
+#    - exit 0
+
     
 #coveralls-integration-test:
   #stage: test
  # script:
   #  - exit 0
 
-CODE QUALITY:
-  stage: test
-  script:
-    - exit 0
+#CODE QUALITY:
+#  stage: test
+#  script:
+#    - exit 0
 
 #cucumber-mysql-acceptance-test:
 #  stage: test
@@ -264,11 +247,11 @@ My unit tests:
   script:
     - exit 0
 
+
 Rubocop static:
   stage: test
   script:
     - exit 0
-    
 
 
 
@@ -283,5 +266,5 @@ include:
   - template: Security/DAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/DAST.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/License-Management.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/License-Management.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml  
   - template: Security/SAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml

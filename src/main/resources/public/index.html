@@ -1,42 +1,62 @@
-<!DOCTYPE HTML>
-<html>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/tanuki.css">
-    <title>Welcome to Tanuki Tech Homepage!</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colonial Defense Force</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-theme17.css">
 </head>
-<body class="text-center">
-
-    <form class="form-signin">
-        <img class="mb-4" src="tanuki_anime.png" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">TanukiTech</h1>
-        <p>
-            Not using TanukiTech yet? <br/>
-            <a href="http://www.gitlab.com">Take the tour</a> or <a href="/greeting">join now</a>
-        </p>
-
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="text" id="inputPassword" class="form-control" placeholder="Password" required>
-<!-- Comment -->
-        <small>
-            <a href="http://www.gitlab.com">Click here if you forgot your password.</a><br/><br/>
-        </small>
-
-        <div class="checkbox mb-3">
-            <label>
-            <input type="checkbox" value="remember-me"> Remember me
-            </label>
+<body>
+    <div class="form-body without-side">
+        <div class="website-logo">
+            <a href="index.html">
+                <div class="logo">
+                    <img class="logo-size" src="img/bsg62.png" alt="">
+                </div>
+            </a>
         </div>
+        <div class="row">
+            <div class="img-holder">
+                <div class="bg"></div>
+                <div class="info-holder">
+                    <img src="img/BSGPegasus.jpg" alt="">
+                </div>
+            </div>
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="form-items">
+                        <h2 style="text-align: center;">BSG-62 Pegasus DRADIS</h2>
+                        <p style="text-align: center;"><strong>D</strong>irection, <strong>RA</strong>nge, and <strong>DIS</strong>tance</p>
+                        <h3 style="text-align: center;">Onboard Air-Gapped Navigation Network</h3>
+                        <h3 style="text-align: center;">Login to account</h3>
+                        <p style="text-align: center;">Since DRADIS is the central component of the navigation computer, defensive and offensive weapons systems your authorized CAC Card and On Duty Daily Pass Phrase (ODDPP) are required for full access.</p>
+                        <form>
+                            <input class="form-control" type="text" name="username" placeholder="Colonial Defense Force ID" required>
+                            <input class="form-control" type="text" name="password" placeholder="Password" required>
+                            <div class="form-button">
+                                <button id="submit" type="submit" class="ibtn">Login</button> <a href="forget17.html">Forget password?</a>
+                            </div>
+                        </form>
+                        <!-- <div class="other-links">
+                            <div class="text">Or login with</div>
+                            <a href="#"><i class="fab fa-facebook-f"></i>Facebook</a><a href="#"><i class="fab fa-google"></i>Google</a><a href="#"><i class="fab fa-linkedin-in"></i>Linkedin</a>
+                        </div>
+                        <div class="page-links">
+                            <a href="register17.html">Register new account</a>/-->
 
-        <button class="btn btn-lg btn-purple btn-block" type="submit">Sign in</button>
-        <br/><a href="index.html">Login with your TanukiTechID</a>
-        <p class="mt-5 mb-3 text-muted">&copy; 2014-2020</p>
-    </form>
 
-<script src="/js/jquery-3.3.1.slim.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
 </body>
-</html>
+</html>  

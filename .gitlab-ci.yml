@@ -167,7 +167,7 @@ workflow:
     - exists:
         - .static
 
-build:
+.build:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image:v0.2.0"
   variables:

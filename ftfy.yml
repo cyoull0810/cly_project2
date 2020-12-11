@@ -1,0 +1,16 @@
+image: docker:latest
+services:
+  - docker:dind
+
+.ftfy_sast:
+  stage: test
+  script:
+    - cp gl-fortify-sast-report.json gl-sast-report.json
+
+
+  artifacts:
+    when: on_success
+    reports:
+      sast: gl-sast-report.json
+
+

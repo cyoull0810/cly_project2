@@ -81,6 +81,7 @@ stages:
   - review
   - staging
   - dast
+  - fortify
   - canary
   - production
   - incremental rollout 10%
@@ -242,6 +243,13 @@ workflow:
 #  script:
 #    - exit 0
 
+fortify_sast:
+  stage: fortify
+  only:
+    - master
+    - merge_requests
+  extends: .ftfy_sast
+
 My unit tests:
   stage: test
   script:
@@ -257,6 +265,7 @@ Rubocop static:
 
 
 include:
+  - local: .ftfy.yml
   - template: Jobs/Build.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
   #- template: Jobs/Test.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Test.gitlab-ci.yml
   - template: Jobs/Code-Quality.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Code-Quality.gitlab-ci.yml

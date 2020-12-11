@@ -1,0 +1,458 @@
+{
+  "version": "3.0",
+  "vulnerabilities": [
+    {
+      "id": "3E0A84EDCB6D82337F803B0298E1D04B",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/config_override.php",
+        "start_line": 31,
+        "end_line": 31,
+        "class": "Security Features",
+        "method": "ArrayAccess: $sugar_config",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "58070EF1CD1628E74206AC97A2EA6C3A",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "docker_config_si.php",
+        "start_line": 9,
+        "end_line": 9,
+        "class": "Security Features",
+        "method": "ArrayAccess",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "71F7D4AA5162D3317685E12C050A2E79",
+      "category": "sast",
+      "name": "System Information Leak: Internal",
+      "message": "System Information Leak: Internal",
+      "description": "Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/include/SugarLogger/StdoutLogger.php",
+        "start_line": 56,
+        "end_line": 56,
+        "class": "Encapsulation",
+        "method": "        // write out to the file including the time in the dateFormat, the process id, the user id,\n        // and the log level as well as the message\n        fwrite($this->fp, '[' . getmypid() . ']['.$userID.']['.strtoupper($level).'] ' . $message . \"\\n\");\n    }\n\n    /**",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "7c086e37-bcda-4203-8918-2b663eb9aeb5",
+          "name": "CWE ID 497, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "87E3EC5CC8154C006783CC461A6DDEEB",
+      "category": "sast",
+      "name": "Build Misconfiguration: External Maven Dependency Repository",
+      "message": "Build Misconfiguration: External Maven Dependency Repository",
+      "description": "This maven build script relies on external sources, which could allow an attacker to insert malicious code into the final product or to take control of the build machine.",
+      "cve": "Deprecated",
+      "severity": "Medium",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "pom.xml",
+        "start_line": 3,
+        "end_line": 3,
+        "class": "Environment",
+        "method": "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n    <groupId>EngagementPlatform</groupId>\n    <artifactId>suitecrm</artifactId>",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "bdf67100-cab7-43ff-8eab-f6b8eb68f8fc",
+          "name": "CCI-001167, CCI-001499, CCI-001749, CCI-001812, Standards Mapping - DISA Control Correlation Identifier Version 2",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "8DFBD8EDF0A22547BA253DC4DA36D8AA",
+      "category": "sast",
+      "name": "Password Management: Password in Comment",
+      "message": "Password Management: Password in Comment",
+      "description": "Storing passwords or password details in plain text anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "Medium",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/modules/Users/authentication/SAML2Authenticate/lib/onelogin/settings.php",
+        "start_line": 133,
+        "end_line": 133,
+        "class": "Security Features",
+        "method": "Comment",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "102219e3-124f-4ae4-adb7-cad49ec566ce",
+          "name": "CWE ID 615, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "ABD312D9D263A6E05AD26DA9C2C5B750",
+      "category": "sast",
+      "name": "System Information Leak: Internal",
+      "message": "System Information Leak: Internal",
+      "description": "Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/include/SugarLogger/StdoutLogger.php",
+        "start_line": 56,
+        "end_line": 56,
+        "class": "Encapsulation",
+        "method": "        // write out to the file including the time in the dateFormat, the process id, the user id,\n        // and the log level as well as the message\n        fwrite($this->fp, '[' . getmypid() . ']['.$userID.']['.strtoupper($level).'] ' . $message . \"\\n\");\n    }\n\n    /**",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "7c086e37-bcda-4203-8918-2b663eb9aeb5",
+          "name": "CWE ID 497, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "B001992548418615D2251BE6033E91EE",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "docker_config_override.php",
+        "start_line": 3,
+        "end_line": 3,
+        "class": "Security Features",
+        "method": "ArrayAccess: $sugar_config",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "BF55E36E7F7A71E7C2A7B54CE3CA34FB",
+      "category": "sast",
+      "name": "Password Management: Password in Comment",
+      "message": "Password Management: Password in Comment",
+      "description": "Storing passwords or password details in plain text anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "Medium",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/modules/Users/authentication/SAML2Authenticate/lib/onelogin/settings.php",
+        "start_line": 134,
+        "end_line": 134,
+        "class": "Security Features",
+        "method": "Comment",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "102219e3-124f-4ae4-adb7-cad49ec566ce",
+          "name": "CWE ID 615, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "CBBDF672E63B342D0B940EB228FBF4BE",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "docker_config_override.php",
+        "start_line": 3,
+        "end_line": 3,
+        "class": "Security Features",
+        "method": "ArrayAccess: $sugar_config",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "D85E27E883908BACC992C1619CECA5F9",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "docker_config_si.php",
+        "start_line": 8,
+        "end_line": 8,
+        "class": "Security Features",
+        "method": "ArrayAccess",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "D9B19BDDC31476C211E741881161C643",
+      "category": "sast",
+      "name": "Password Management: Hardcoded Password",
+      "message": "Password Management: Hardcoded Password",
+      "description": "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/config_override.php",
+        "start_line": 31,
+        "end_line": 31,
+        "class": "Security Features",
+        "method": "ArrayAccess: $sugar_config",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "0730dfd2-9396-4157-beec-939d8bbe5633",
+          "name": "CWE ID 259, CWE ID 798, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "F7DF8E242588EA6D1AC115B04EE2284E",
+      "category": "sast",
+      "name": "Password Management: Empty Password",
+      "message": "Password Management: Empty Password",
+      "description": "Empty passwords may compromise system security in a way that cannot be easily remedied.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "docker_config_si.php",
+        "start_line": 15,
+        "end_line": 15,
+        "class": "Security Features",
+        "method": "ArrayAccess",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "6d7436d1-0f64-476d-8e2b-de3ecbfbdcbe",
+          "name": "Windows Data Protection",
+          "value": "security vulnerability",
+          "url": ""
+        }
+      ]
+    },
+    {
+      "id": "79D089B9B8A7FEF619F7E5B2421CE61A",
+      "category": "sast",
+      "name": "Command Injection",
+      "message": "Command Injection",
+      "description": "Executing commands from an untrusted source or in an untrusted environment can cause an application to execute malicious commands on behalf of an attacker.",
+      "cve": "Deprecated",
+      "severity": "Critical",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "fix_timestamps.py",
+        "start_line": 33,
+        "end_line": 33,
+        "class": "Input Validation and Representation",
+        "method": "    touch_timestr = time.strftime('%Y%m%d%H%M.%S', timestruct)\n    print(\"setting file modification times to\", touch_timestr)\n    subprocess.call(\n        [\"find\", rootDir, \"-type\", \"f\", \"-exec\", \"touch\", \"-m\", \"-t\", touch_timestr, \"{}\", \"+\"])",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "8d771df5-3d2e-4546-8a66-86f5b0f079ec",
+          "name": "CWE ID 77, CWE ID 78, Standards Mapping - Common Weakness Enumeration",
+          "value": "security vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "FD8BCADB0C84E1089AD1AF2458DB0E52",
+      "category": "sast",
+      "name": "Weak Cryptographic Hash",
+      "message": "Weak Cryptographic Hash",
+      "description": "Weak cryptographic hashes cannot guarantee data integrity and should not be used in security-critical contexts.",
+      "cve": "Deprecated",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "scanner": {
+        "id": "fortify_sca",
+        "name": "Fortify SCA"
+      },
+      "location": {
+        "file": "custom/modules/custom_install.php",
+        "start_line": 39,
+        "end_line": 39,
+        "class": "Security Features",
+        "method": "                            $GLOBALS['log']->debug(\"INSTALLED: \".$upgrade->filename());\n                            $new_upgrade = new UpgradeHistory();\n                            $new_upgrade->filename      = basename($upgrade->filename());\n                            $new_upgrade->md5sum        = md5_file($upgrade->filename());\n                            $new_upgrade->type          = 'custom';\n                            $new_upgrade->version       = $upgrade->version();\n                            $new_upgrade->status        = \"installed\";",
+        "dependency": {
+          "package": {}
+        }
+      },
+      "identifiers": [
+        {
+          "type": "31a1aa71-6887-4161-aaef-6fc86a1efd16",
+          "name": "MD5 and MD4 Collision Generators, Xiaoyun Wang",
+          "value": "security vulnerability",
+          "url": ""
+        }
+      ]
+    }
+  ],
+  "remediations": [],
+  "scan": {
+    "scanner": {
+      "id": "fortify_sca",
+      "name": "Fortify",
+      "url": "https://www.microfocus.com/",
+      "vendor": {
+        "name": "Micro Focus"
+      },
+      "version": "20.2"
+    },
+    "type": "sast",
+    "start_time": "2020-12-09T00:38:09",
+    "end_time": "2020-12-09T00:39:53",
+    "status": "success"
+  }
+
+}

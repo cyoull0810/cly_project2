@@ -1,4 +1,7 @@
 
+## DAST ON DEMAND SCANNING SITE VALUE**
+https://lincwilliams-demo-area-osiris.35.185.0.97.nip.io/
+
 
 ## The **_Galactica_ type battlestar**
 A Colonial capital ship that combines the functions of an aircraft carrier and a battleship  [[7]](https://www.battlestarwiki.org/Galactica_type_battlestar#cite_note-7). It was designed and deployed after the outbreak of hostilities between the  [Cylons](https://www.battlestarwiki.org/Cylon_Centurion_005 "Cylon Centurion 005")  and Colonials. A few ships of this class remain in service over 40 years after the end of the  [Cylon War](https://www.battlestarwiki.org/Cylon_War "Cylon War"); however, most were retired.

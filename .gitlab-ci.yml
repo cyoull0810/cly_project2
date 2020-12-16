@@ -119,7 +119,7 @@ fortify_sast:
 include:
   - local: .ftfy.yml
   - template: Jobs/Build.gitlab-ci.yml  
-  - template: Jobs/Code-Quality.gitlab-ci.yml  
+  #- template: Jobs/Code-Quality.gitlab-ci.yml  
   - template: Jobs/Deploy.gitlab-ci.yml  
   - template: Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml  
   #- template: Jobs/Browser-Performance-Testing.gitlab-ci.yml  

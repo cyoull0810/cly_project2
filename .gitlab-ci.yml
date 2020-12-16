@@ -1,27 +1,13 @@
 image: alpine:latest
 
 variables:
-  
-  #********Tests switches - turning things off *******
-  #CODE_QUALITY_DISABLED: "true"
-  #CONTAINER_SCANNING_DISABLED: "true"
-  #DAST_DISABLED: "true"
-  #DEPENDENCY_SCANNING_DISABLED: "true"
-  #LICENSE_MANAGEMENT_DISABLED: "true"
-  #PERFORMANCE_DISABLED: "true"
-  #REVIEW_DISABLED: "true"
-  TEST_DISABLED: "true"
-  #SAST_DISABLED: "true"
-  
-  #*********Pipipline switches turning things on *********
-  INCREMENTAL_ROLLOUT_ENABLED: "true"
-  STAGING_ENABLED: "true"
-
+  # KUBE_INGRESS_BASE_DOMAIN is the application deployment domain and should be set as a variable at the group or project level.
+  # KUBE_INGRESS_BASE_DOMAIN: domain.example.com
+  SAST_DEFAULT_ANALYZERS: "spotbugs"
   POSTGRES_USER: user
   POSTGRES_PASSWORD: testing-password
-  POSTGRES_ENABLED: "true"
+  POSTGRES_ENABLED: "false"
   POSTGRES_DB: $CI_ENVIRONMENT_SLUG
-  POSTGRES_VERSION: 11.7.0
 
   DOCKER_DRIVER: overlay2
 
@@ -34,8 +20,8 @@ stages:
   - test
   - deploy  # dummy stage to follow the template guidelines
   - review
-  - staging
   - dast
+  - staging
   - canary
   - production
   - incremental rollout 10%
@@ -45,26 +31,104 @@ stages:
   - performance
   - cleanup
 
+workflow:
+  rules:
+    - if: '$BUILDPACK_URL || $AUTO_DEVOPS_EXPLICITLY_ENABLED == "1" || $DOCKERFILE_PATH'
 
+    - exists:
+        - Dockerfile
 
-fortify_sast:
-  stage: test
-  only:
-    - master
-    - merge_requests
-  extends: .ftfy_sast
+    # https://github.com/heroku/heroku-buildpack-clojure
+    - exists:
+        - project.clj
 
+    # https://github.com/heroku/heroku-buildpack-go
+    - exists:
+        - go.mod
+        - Gopkg.mod
+        - Godeps/Godeps.json
+        - vendor/vendor.json
+        - glide.yaml
+        - src/**/*.go
+
+    # https://github.com/heroku/heroku-buildpack-gradle
+    - exists:
+        - gradlew
+        - build.gradle
+        - settings.gradle
+
+    # https://github.com/heroku/heroku-buildpack-java
+    - exists:
+        - pom.xml
+        - pom.atom
+        - pom.clj
+        - pom.groovy
+        - pom.rb
+        - pom.scala
+        - pom.yaml
+        - pom.yml
+
+    # https://github.com/heroku/heroku-buildpack-multi
+    - exists:
+        - .buildpacks
+
+    # https://github.com/heroku/heroku-buildpack-nodejs
+    - exists:
+        - package.json
+
+    # https://github.com/heroku/heroku-buildpack-php
+    - exists:
+        - composer.json
+        - index.php
+
+    # https://github.com/heroku/heroku-buildpack-play
+    # TODO: detect script excludes some scala files
+    - exists:
+        - '**/conf/application.conf'
+
+    # https://github.com/heroku/heroku-buildpack-python
+    # TODO: detect script checks that all of these exist, not any
+    - exists:
+        - requirements.txt
+        - setup.py
+        - Pipfile
+
+    # https://github.com/heroku/heroku-buildpack-ruby
+    - exists:
+        - Gemfile
+
+    # https://github.com/heroku/heroku-buildpack-scala
+    - exists:
+        - '*.sbt'
+        - project/*.scala
+        - .sbt/*.scala
+        - project/build.properties
+
+    # https://github.com/dokku/buildpack-nginx
+    - exists:
+        - .static
 
 include:
-  - local: .ftfy.yml
-  - template: Security/SAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml
   - template: Jobs/Build.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
-  #- template: Jobs/Test.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Test.gitlab-ci.yml
+  - template: Jobs/Test.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Test.gitlab-ci.yml
   - template: Jobs/Code-Quality.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Code-Quality.gitlab-ci.yml
   - template: Jobs/Deploy.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Deploy.gitlab-ci.yml
+  - template: Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml
   - template: Jobs/Browser-Performance-Testing.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Jobs/Browser-Performance-Testing.gitlab-ci.yml
   - template: Security/DAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/DAST.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml  
- 
+  - template: Security/License-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/License-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/ci/templates/Security/Secret-Detection.gitlab-ci.yml
+test:
+  after_script:
+    - cp -r /app/target "$CI_PROJECT_DIR"
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml 
+
+sast:
+  after_script:
+    - cat gl-sast-report.json

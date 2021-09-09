@@ -1,6 +1,9 @@
 
 ## DAST ON DEMAND SCANNING SITE VALUE**
-https://lincwilliams-demo-area-osiris.35.185.0.97.nip.io/
+## Please enter Target URL of Website or API**
+Example:
+-   https://www.confluent.io/
+-   https://lincwilliams-demo-area-osiris.35.185.0.97.nip.io/
 
 
 ## The **_Galactica_ type battlestar**
